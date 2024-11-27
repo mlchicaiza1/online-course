@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: course-app
+    ports:
+      - "8010:80" # Expone el puerto 8100 de la máquina al puerto 80 del contenedor
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=test
+      - DB_USERNAME=root_test
+      - DB_PASSWORD=root_test
+    networks:
+      - test-network
+
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: test
+      MYSQL_USER: root_test
+      MYSQL_PASSWORD: root_test
+    ports:
+      - "3310:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    networks:
+      - test-network
+
+networks:
+  test-network:
+    driver: bridge
+
+volumes:
+  dbdata:
